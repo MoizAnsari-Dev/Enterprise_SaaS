@@ -8,13 +8,6 @@ pipeline {
         
         // This MUST match the ID of the credentials you create in Jenkins (Global scope, Username/Password)
         DOCKERHUB_CREDENTIALS_ID = 'dockerhub-credentials'
-        
-        // --- DEPLOYMENT VM CONFIGURATION ---
-        VM_IP = 'your_vm_ip_address_here'
-        VM_USER = 'your_vm_user_here'
-        // Jenkins Credentials mapped to your SSH Private Key
-        VM_SSH_CREDENTIALS_ID = 'vm-ssh-credentials'
-        PROJECT_DIR = '/path/to/your/project/on/vm'
     }
 
     stages {
@@ -49,39 +42,21 @@ pipeline {
             }
         }
 
-        stage('Deploy to VM') {
+        stage('Deploy Locally (on EC2)') {
             steps {
                 script {
-                    echo "Connecting to destination VM to pull exact latest image and restart..."
+                    echo "Deploying directly to this EC2 instance where Jenkins is running..."
                     
-                    // --- REMOTE SSH DEPLOYMENT ---
-                    // Requires "SSH Agent" Jenkins plugin to be installed.
-                    sshagent(credentials: [env.VM_SSH_CREDENTIALS_ID]) {
-                        sh """
-                        ssh -o StrictHostKeyChecking=no ${VM_USER}@${VM_IP} << 'EOF'
-                            # Navigate to the project directory on your VM
-                            cd ${PROJECT_DIR}
-                            
-                            export DOCKERHUB_USERNAME=${DOCKERHUB_USERNAME}
-                            
-                            # Pull the latest images we just pushed to Docker Hub
-                            docker-compose pull
-                            
-                            # Restart containers in detached mode; only touches containers whose images updated
-                            docker-compose up -d --remove-orphans
-EOF
-                        """
-                    }
-                    
-                    // -------------------------------------------------------------
-                    // (ALTERNATIVE): If your Jenkins instance is ALREADY running directly on the VM, 
-                    // comment out the 'sshagent' block above and uncomment this below instead:
-                    // -------------------------------------------------------------
-                    // sh """
-                    //     export DOCKERHUB_USERNAME=${DOCKERHUB_USERNAME}
-                    //     docker-compose pull
-                    //     docker-compose up -d --remove-orphans
-                    // """
+                    sh """
+                        # Export username so compose parses correctly
+                        export DOCKERHUB_USERNAME=${DOCKERHUB_USERNAME}
+                        
+                        # Pull latest images
+                        docker-compose pull
+                        
+                        # Restart containers; orphans removed, only updated images recreated
+                        docker-compose up -d --remove-orphans
+                    """
                 }
             }
         }
