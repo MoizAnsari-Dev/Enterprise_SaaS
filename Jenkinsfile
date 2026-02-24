@@ -21,9 +21,11 @@ pipeline {
         stage('Build Docker Images') {
             steps {
                 script {
-                    echo "Building Backend & Frontend Images using Compose..."
-                    // Export the username so standard docker-compose parses the image name perfectly
-                    sh "DOCKERHUB_USERNAME=${DOCKERHUB_USERNAME} docker-compose build"
+                    echo "Building Backend Image from Dockerfile..."
+                    sh "docker build -t ${DOCKERHUB_USERNAME}/mean-task-backend:latest ./backend"
+
+                    echo "Building Frontend Image from Dockerfile..."
+                    sh "docker build -t ${DOCKERHUB_USERNAME}/mean-task-frontend:latest ./frontend"
                 }
             }
         }
@@ -36,7 +38,8 @@ pipeline {
                         sh "echo \$DOCKERHUB_PASS | docker login -u \$DOCKERHUB_USER --password-stdin"
                         
                         echo "Pushing freshly built images to Docker Hub..."
-                        sh "DOCKERHUB_USERNAME=${DOCKERHUB_USERNAME} docker-compose push"
+                        sh "docker push ${DOCKERHUB_USERNAME}/mean-task-backend:latest"
+                        sh "docker push ${DOCKERHUB_USERNAME}/mean-task-frontend:latest"
                     }
                 }
             }
