@@ -2,18 +2,14 @@ pipeline {
     agent any
 
     environment {
-        // --- DOCKER HUB CONFIGURATION ---
-        // Change this to your actual Docker Hub username
         DOCKERHUB_USERNAME = 'moizaman'
-        
-        // This MUST match the ID of the credentials you create in Jenkins (Global scope, Username/Password)
+
         DOCKERHUB_CREDENTIALS_ID = 'dockerhub-credentials'
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                // Clone explicitly from the GitHub repository
                 git branch: 'main', url: 'https://github.com/MoizAnsari-Dev/crud-dd-task-mean-app.git'
             }
         }
@@ -33,7 +29,7 @@ pipeline {
         stage('Docker Login') {
             steps {
                 withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-creds',
+                    credentialsId: env.DOCKERHUB_CREDENTIALS_ID,
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
@@ -55,7 +51,7 @@ pipeline {
         stage('Deploy on EC2)') {
             steps {
                 script {
-                    echo "Deploying directly to this EC2 instance where Jenkins is running..."
+                    echo "Deploying directly to this EC2 instance..."
                     
                     sh """
                         # Export username so compose parses correctly
