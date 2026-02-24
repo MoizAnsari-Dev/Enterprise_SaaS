@@ -18,10 +18,10 @@ pipeline {
             steps {
                 script {
                     echo "Building Backend Image from Dockerfile..."
-                    sh "docker build -t ${DOCKERHUB_USERNAME}/mean-task-backend:latest ./backend"
+                    sh "docker build -t ${DOCKERHUB_USERNAME}/mean-task-backend:1.0.$BUILD_NUMBER ./backend"
 
                     echo "Building Frontend Image from Dockerfile..."
-                    sh "docker build -t ${DOCKERHUB_USERNAME}/mean-task-frontend:latest ./frontend"
+                    sh "docker build -t ${DOCKERHUB_USERNAME}/mean-task-frontend:1.0.$BUILD_NUMBER ./frontend"
                 }
             }
         }
@@ -42,8 +42,8 @@ pipeline {
             steps {
                 script {
                     echo "Pushing freshly built images to Docker Hub..."
-                    sh "docker push ${DOCKERHUB_USERNAME}/mean-task-backend:latest"
-                    sh "docker push ${DOCKERHUB_USERNAME}/mean-task-frontend:latest"
+                    sh "docker push ${DOCKERHUB_USERNAME}/mean-task-backend:1.0.$BUILD_NUMBER"
+                    sh "docker push ${DOCKERHUB_USERNAME}/mean-task-frontend:1.0.$BUILD_NUMBER"
                 }
             }
         }
