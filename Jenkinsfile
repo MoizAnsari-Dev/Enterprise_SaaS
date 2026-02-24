@@ -42,7 +42,7 @@ pipeline {
             }
         }
 
-        stage('Deploy Locally (on EC2)') {
+        stage('Deploy on EC2)') {
             steps {
                 script {
                     echo "Deploying directly to this EC2 instance where Jenkins is running..."
