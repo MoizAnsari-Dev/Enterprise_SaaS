@@ -54,13 +54,12 @@ pipeline {
                     echo "Deploying directly to this EC2 instance..."
                     
                     sh """
-                        # Export username so compose parses correctly
                         export DOCKERHUB_USERNAME=${DOCKERHUB_USERNAME}
                         
-                        # Pull latest images
                         docker-compose pull
                         
-                        # Restart containers; orphans removed, only updated images recreated
+                        # Fix for older docker-compose v1 instances failing due to ContainerConfig bug from new Images
+                        docker-compose down
                         docker-compose up -d --remove-orphans
                     """
                 }
