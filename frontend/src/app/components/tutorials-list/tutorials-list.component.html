@@ -51,16 +51,36 @@
         </div>
       </div>
 
-      <div class="list-group custom-list-group">
-        <div class="custom-list-item"
+      <div class="d-flex flex-column gap-3">
+        <div class="modern-card p-3 mb-3" style="cursor: pointer; transition: all 0.2s ease;"
           *ngFor="let tutorial of tutorials | paginate: { itemsPerPage: pageSize, currentPage: page, totalItems: count }; let i = index"
-          [class.active-item]="i == currentIndex" (click)="setActiveTutorial(tutorial, i)">
-          <div class="d-flex justify-content-between align-items-center w-100">
-            <span class="font-weight-500">{{ tutorial.title }}</span>
-            <svg *ngIf="i == currentIndex" style="width: 18px; height: 18px; color: var(--primary);" fill="none"
-              stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
+          [style.border]="i == currentIndex ? '2px solid var(--primary)' : '1px solid var(--border-light)'"
+          (click)="setActiveTutorial(tutorial, i)">
+
+          <div class="d-flex align-items-center">
+            <div class="mr-3" (click)="$event.stopPropagation()">
+              <input type="checkbox" style="width: 18px; height: 18px; cursor: pointer;"
+                [checked]="selectedTutorials.has(tutorial.id)" (change)="toggleSelection(tutorial, $event)">
+            </div>
+
+            <div class="w-100 d-flex justify-content-between align-items-center">
+              <div>
+                <h5 style="margin-bottom: 4px; font-weight: 600;">{{ tutorial.title }}</h5>
+                <span class="badge" [ngClass]="tutorial.published ? 'badge-success' : 'badge-warning'"
+                  style="font-size: 0.75rem;">
+                  {{ tutorial.published ? "Published" : "Pending" }}
+                </span>
+                <p class="text-muted mt-2 mb-0" style="font-size: 0.85rem;" *ngIf="tutorial.description">
+                  {{ tutorial.description.length > 60 ? (tutorial.description | slice:0:60) + '...' :
+                  tutorial.description }}
+                </p>
+              </div>
+
+              <svg *ngIf="i == currentIndex" style="width: 24px; height: 24px; color: var(--primary);" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </div>
           </div>
         </div>
       </div>
@@ -71,14 +91,15 @@
         </pagination-controls>
       </div>
 
-      <button class="btn-modern-danger w-100 mt-4" (click)="removeAllTutorials()">
+      <button class="btn-modern-danger w-100 mt-4" (click)="deleteSelectedTutorials()"
+        [disabled]="selectedTutorials.size === 0" [style.opacity]="selectedTutorials.size === 0 ? '0.5' : '1'">
         <svg style="width: 18px; height: 18px; margin-right: 6px; display: inline;" fill="none" stroke="currentColor"
           viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
           </path>
         </svg>
-        Remove All Tutorials
+        Delete Selected ({{ selectedTutorials.size }})
       </button>
     </div>
   </div>
