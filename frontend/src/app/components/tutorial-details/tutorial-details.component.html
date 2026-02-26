@@ -16,6 +16,22 @@
         {{ currentTutorial.published ? "Published" : "Pending" }}
       </span>
     </div>
+    <div class="mb-4 text-muted" style="font-size: 0.85rem;" *ngIf="currentTutorial.createdAt">
+      <div class="mb-1"><svg
+          style="width: 14px; height: 14px; margin-right: 4px; display: inline; vertical-align: text-bottom;"
+          fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg> <strong>Created:</strong> {{ currentTutorial.createdAt | date:'medium' }}</div>
+      <div *ngIf="currentTutorial.updatedAt && currentTutorial.updatedAt !== currentTutorial.createdAt">
+        <svg style="width: 14px; height: 14px; margin-right: 4px; display: inline; vertical-align: text-bottom;"
+          fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+          </path>
+        </svg> <strong>Last Updated:</strong> {{ currentTutorial.updatedAt | date:'medium' }}
+      </div>
+    </div>
 
     <a class="btn-modern px-4" routerLink="/tutorials/{{ currentTutorial.id }}">
       Edit Tutorial

@@ -3,6 +3,8 @@ import { TutorialService } from 'src/app/services/tutorial.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Tutorial } from 'src/app/models/tutorial.model';
 
+import Swal from 'sweetalert2';
+
 @Component({
   selector: 'app-tutorial-details',
   templateUrl: './tutorial-details.component.html',
@@ -17,7 +19,7 @@ export class TutorialDetailsComponent implements OnInit {
     description: '',
     published: false
   };
-  
+
   message = '';
 
   constructor(
@@ -57,7 +59,14 @@ export class TutorialDetailsComponent implements OnInit {
         next: (res) => {
           console.log(res);
           this.currentTutorial.published = status;
-          this.message = res.message ? res.message : 'The status was updated successfully!';
+          Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: status ? 'Published Successfully' : 'Unpublished Successfully',
+            showConfirmButton: false,
+            timer: 1500,
+            toast: true
+          });
         },
         error: (e) => console.error(e)
       });
@@ -70,21 +79,45 @@ export class TutorialDetailsComponent implements OnInit {
       .subscribe({
         next: (res) => {
           console.log(res);
-          this.message = res.message ? res.message : 'This tutorial was updated successfully!';
+          Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: 'Tutorial updated successfully!',
+            showConfirmButton: false,
+            timer: 1500,
+            toast: true
+          });
         },
         error: (e) => console.error(e)
       });
   }
 
   deleteTutorial(): void {
-    this.tutorialService.delete(this.currentTutorial.id)
-      .subscribe({
-        next: (res) => {
-          console.log(res);
-          this.router.navigate(['/tutorials']);
-        },
-        error: (e) => console.error(e)
-      });
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.tutorialService.delete(this.currentTutorial.id)
+          .subscribe({
+            next: (res) => {
+              console.log(res);
+              if (!this.viewMode) {
+                this.router.navigate(['/tutorials']);
+              } else {
+                // To trigger refresh on the list page
+                window.location.reload();
+              }
+            },
+            error: (e) => console.error(e)
+          });
+      }
+    });
   }
 
 }

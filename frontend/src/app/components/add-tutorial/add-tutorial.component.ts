@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { Tutorial } from 'src/app/models/tutorial.model';
 import { TutorialService } from 'src/app/services/tutorial.service';
 
+import Swal from 'sweetalert2';
+
 @Component({
   selector: 'app-add-tutorial',
   templateUrl: './add-tutorial.component.html',
@@ -19,6 +21,16 @@ export class AddTutorialComponent {
   constructor(private tutorialService: TutorialService) { }
 
   saveTutorial(): void {
+    if (!this.tutorial.title || this.tutorial.title.trim() === '') {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Tutorial title is required!',
+        confirmButtonColor: '#4f46e5'
+      });
+      return;
+    }
+
     const data = {
       title: this.tutorial.title,
       description: this.tutorial.description
@@ -29,6 +41,14 @@ export class AddTutorialComponent {
         next: (res) => {
           console.log(res);
           this.submitted = true;
+          Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: 'Tutorial created successfully',
+            showConfirmButton: false,
+            timer: 1500,
+            toast: true
+          });
         },
         error: (e) => console.error(e)
       });
