@@ -1,94 +1,113 @@
-# MEAN Stack Application with Nginx Reverse Proxy & CI/CD
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/eb6176b1-3516-4e11-a313-49de53f809dc" alt="Luminary Journal Banner" width="100%" style="border-radius: 12px; margin-bottom: 20px;">
+  
+  <h1 align="center">✨ Luminary Journal ✨</h1>
+  <p align="center">
+    <strong>A seamless, distraction-free personal journaling platform inspired by Notion.</strong>
+  </p>
 
-This project is a fully containerized Full-Stack CRUD Application built using the **MEAN stack** (MongoDB, Express, Angular 15, Node.js). It includes a complete CI/CD pipeline using Jenkins and is served securely through an Nginx Reverse Proxy on port `80`.
-
-## Architecture & Infrastructure
-
-- **Frontend:** Angular 15 Client
-- **Backend:** Node.js & Express REST API
-- **Database:** MongoDB 
-- **Web Server / Proxy:** Nginx proxying `/api` to the backend and `/` to the frontend.
-- **CI/CD:** Jenkins declarative pipeline pushing to Docker Hub and deploying via SSH.
+  <p align="center">
+    <img src="https://img.shields.io/badge/Stack-MEAN-green.svg?style=for-the-badge&logo=mongodb" alt="MEAN Stack" />
+    <img src="https://img.shields.io/badge/Frontend-Angular_15-dd0031.svg?style=for-the-badge&logo=angular" alt="Angular" />
+    <img src="https://img.shields.io/badge/Backend-Node_&_Express-339933.svg?style=for-the-badge&logo=nodedotjs" alt="Node" />
+    <img src="https://img.shields.io/badge/Proxy-Nginx-009639.svg?style=for-the-badge&logo=nginx" alt="Nginx" />
+    <img src="https://img.shields.io/badge/Container-Docker-2496ED.svg?style=for-the-badge&logo=docker" alt="Docker" />
+  </p>
+</div>
 
 ---
 
-## Setup & Deployment Instructions
+## 📖 What is Luminary?
 
-### Option 1: Using Docker Compose (Recommended)
-The easiest way to run the entire application locally or on a Virtual Machine without installing Node or MongoDB directly is by utilizing the provided `docker-compose.yml` file.
+Originally a CRUD application for coding tutorials, this project has been completely overhauled into a **minimalist personal journal**. It focuses on an edge-to-edge blank canvas writing environment, offering automated intelligence to organize your private entries while looking stunning. 
 
-1. **Clone the repository:**
+It is fully containerized with **Docker** and uses **Nginx** as a reverse proxy, making it a production-ready template that can be integrated directly into CI/CD pipelines.
+
+---
+
+## 🚀 Key Features
+
+- **📝 Notion-Style Editor Canvas**
+  - Experience distraction-free writing! The "New Entry" screen mimics Notion’s edge-to-edge blank page with gorgeous typography, borderless inputs, and soft ghost-text placeholders.
+- **🔒 Private Journal Locking Mechanism**
+  - Instead of "publishing" entries, Luminary natively acts as a private draft board. When an entry is finished, click the `Lock` pad-lock to vault it.
+- **🧠 Auto AI-Powered Tagging**
+  - Titles are scanned logically. An entry named "My Work Ideas" gets automatically categorized under `Work` and `Ideas` tags directly on the dashboard.
+- **⭐ 5-Star Interactive Rating System**
+  - Want to remember a specific day? Instantly rank your entries from 0 to 5 stars via hovering icon interactions directly from the list view without reloading.
+- **📊 Real-Time Word Count Tracking**
+  - A sleek floating widget instantly counts and updates your word count as you type your thoughts onto the canvas.
+- **🌗 Built-In Dark Mode & Glassmorphism UI**
+  - Beautiful, dynamic Shadden/Vercel-inspired tab layouts with smooth animations, custom scrollbars, and instant dark-mode toggling.
+
+---
+
+## 🏗️ Architecture & Infrastructure
+
+- **Frontend:** Angular 15 Client with custom raw CSS
+- **Backend:** Node.js & Express REST API using Mongoose
+- **Database:** MongoDB configured natively with Mongoose v7 optimizations
+- **Proxy:** Nginx safely handles internal traffic, routing `/api/*` requests identically.
+- **CI/CD:** Jenkins declarative pipeline pushing into Docker Hub automatically.
+
+---
+
+## ⚙️ Setup & Deployment
+
+### 1. Environment Configuration (.env)
+The application expects environment variables to securely connect to the database. Create a file named `.env` in the `/backend` folder.
+```env
+# /backend/.env
+DB_URL=mongodb://192.168.49.2:30017/mydatabase
+PORT=8080
+```
+> *(A `.env.example` file is included in the repo!)*
+
+### Option A: Using Docker Compose (Recommended)
+The absolute easiest way to run the entire application natively.
+```bash
+# Clone the repository
+git clone https://github.com/MoizAnsari-Dev/crud-dd-task-mean-app.git
+cd crud-dd-task-mean-app
+
+# Run the stack
+docker-compose up -d --build
+```
+> **UI Access:** `http://localhost/`  
+> **API Access:** `http://localhost/api/tutorials` (Routed seamlessly by Nginx)
+
+### Option B: Running Locally (Development Mode)
+If you want to edit the code live:
+
+1. **Start a local MongoDB container:**
    ```bash
-   git clone https://github.com/MoizAnsari-Dev/crud-dd-task-mean-app.git
-   cd crud-dd-task-mean-app
+   docker run -d -p 27017:27017 --name mongodb-server mongo:latest
+   ```
+2. **Start the Backend:**
+   ```bash
+   cd backend
+   npm install
+   node server.js
+   ```
+3. **Start the Frontend:**
+   ```bash
+   cd frontend
+   npm install
+   npx ng serve --port 8081
    ```
 
-2. **Run the stack:**
-   This command automatically builds the frontend and backend Docker images, starts an official MongoDB container, configures the internal network, and sets up Nginx.
-   ```bash
-   docker-compose up -d --build
-   ```
+---
 
-3. **Access the Application:**
-   Open your browser and navigate to:
-   - **Frontend UI:** `http://localhost/` (or your VM's public IP)
-   - **Backend API:** `http://localhost/api/tutorials` (Routed seamlessly by Nginx)
+## 🔄 CI/CD Automation (Jenkins)
 
-4. **Shut down:**
-   ```bash
-   docker-compose down
-   ```
+This repository includes a `Jenkinsfile` that implements a complete Jenkins Pipeline:
+1. **Checkout:** Pulls latest code from the `main` branch.
+2. **Build:** Uses Docker Compose to build the new Frontend/Backend images.
+3. **Push:** Logs into Docker Hub using standard credentials and pushes the securely built containers.
+4. **Deploy:** Reaches out to the target Virtual Machine via SSH, pulls the refreshed images, and intelligently restarts the ecosystem.
 
 ---
 
-### Option 2: Running Locally (Development Mode)
-
-#### 1. Start MongoDB
-You must have MongoDB running locally on port `27017`. You can easily spin it up using Docker:
-```bash
-docker run -d -p 27017:27017 --name mongodb-server mongo:latest
-```
-
-#### 2. Start the Backend Server
-```bash
-cd backend
-npm install
-node server.js
-```
-*The backend will start on port `8080`.*
-
-#### 3. Start the Angular Client
-```bash
-cd frontend
-npm install
-npx ng serve --port 8081
-```
-*The frontend will start on port `8081`.*
-
----
-
-## CI/CD Configuration (Jenkins)
-
-This repository includes a `Jenkinsfile` that fully automates the CI/CD lifecycle:
-1. **Checkout:** Pulls the latest code from the `main` branch.
-2. **Build:** Uses Docker Compose to build the new Frontend and Backend images.
-3. **Push:** Logs into Docker Hub using secured credentials and pushes the newly built images.
-4. **Deploy:** Connects to the target Virtual Machine via SSH, pulls the latest images from Docker Hub, and safely restarts the containers.
-
-**Note:** To replicate this pipeline, ensure your Jenkins environment has the `dockerHubCredentials` (Username/Password) and `vmSshCredentials` configured globally.
-
----
-
-## Screenshots & Deliverables
-
-### 1. CI/CD Configuration and Execution
-<img width="1333" height="632" alt="image" src="https://github.com/user-attachments/assets/f7a8008d-bf53-4b41-85ca-b1eec97af22f" />
-
-
-### 2. Docker Image Build & Push Process
-<img width="1663" height="181" alt="image" src="https://github.com/user-attachments/assets/2af07c26-576f-4872-b184-35399cb414a2" />
-
-
-### 3. Application Deployment and Working UI
-<img width="1686" height="491" alt="image" src="https://github.com/user-attachments/assets/eb6176b1-3516-4e11-a313-49de53f809dc" />
-<img width="1686" height="491" alt="image" src="https://github.com/user-attachments/assets/d5e0793e-e12a-40a7-9698-eab8e9fa4ad9" />
+<p align="center">
+  <i>Built with modern aesthetic passion.</i>
+</p>
