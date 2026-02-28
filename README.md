@@ -73,15 +73,15 @@ flowchart TD
     classDef hpa fill:#ec4899,stroke:#be185d,stroke-width:2px,stroke-dasharray:5 5,color:#ffffff
 
     %% User Interaction
-    User((🧑‍💻 User)):::user --> |HTTP Port 80| Nginx[🌐 Nginx Ingress LoadBalancer]:::loadbalancer
+    User((User)):::user --> |HTTP Port 80| Nginx[Nginx Ingress LoadBalancer]:::loadbalancer
     
     %% Kubernetes Workloads
-    subgraph K8S [☁️ Kubernetes Cluster / Namespace: mean-app]
+    subgraph K8S [Kubernetes Cluster / Namespace: mean-app]
         direction TB
-        Nginx --> |/api/| API[⚙️ Node.js Backend ClusterIP]:::backend
-        Nginx --> |/| WEB[🖥️ Angular Frontend ClusterIP]:::frontend
+        Nginx --> |/api/| API[Node.js Backend ClusterIP]:::backend
+        Nginx --> |/| WEB[Angular Frontend ClusterIP]:::frontend
         
-        API --> |Mongoose| DB_SVC[🗄️ MongoDB ClusterIP]:::database
+        API --> |Mongoose| DB_SVC[MongoDB ClusterIP]:::database
         
         %% Horizontal Pod Autoscalers (HPA)
         HPA_B((Backend HPA <br/> 1-5 Pods)):::hpa -.-> |Auto Scale| API
@@ -92,13 +92,13 @@ flowchart TD
         SEC{{Opaque Secret <br/> Credentials}}:::config -.-> |Base64 Passwords| API
         
         %% Persistent Volumes
-        DB_SVC --> |Stateful Binding| PVC[(💾 AWS gp2 <br/> Persistent Volume Claim)]:::storage
+        DB_SVC --> |Stateful Binding| PVC[(AWS gp2 <br/> Persistent Volume Claim)]:::storage
     end
 
     %% Jenkins CI / CD Automation Pipeline
-    subgraph CI [🚀 CI/CD Automation Pipeline]
-        GH(🐙 GitHub Repo) --> |Trigger| J[🛠️ Jenkins Pipeline]:::cicd
-        J --> |Docker Build & Push| DHUB[🐳 Docker Hub]:::cicd
+    subgraph CI [CI/CD Automation Pipeline]
+        GH(GitHub Repo) --> |Trigger| J[Jenkins Pipeline]:::cicd
+        J --> |Docker Build & Push| DHUB[Docker Hub]:::cicd
         DHUB -.-> |Image Pull| API
         DHUB -.-> |Image Pull| WEB
         J -.-> |kubectl declarative rollout| Nginx
