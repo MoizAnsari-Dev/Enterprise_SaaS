@@ -58,6 +58,39 @@ We obsessed over every pixel to create a journaling experience that feels like a
 
 Luminary Journal is architected to scale. The entire environment is declaratively defined in the `/k8s` directory, built for high availability and zero-downtime deployments.
 
+```mermaid
+graph TD
+    %% Users & Entry
+    User((👨‍💻 User)) --> |HTTP Port 80| Nginx[Nginx Ingress <br/> LoadBalancer]
+    
+    %% Kubernetes Cluster
+    subgraph "Kubernetes Cluster (Namespace: mean-app)"
+        Nginx --> |/api/*| API[Node.js Backend <br/> ClusterIP]
+        Nginx --> |/*| WEB[Angular Frontend <br/> ClusterIP]
+        
+        API --> DB_SVC[MongoDB <br/> ClusterIP]
+        
+        %% Auto-scaling dependencies
+        HPA_B((Backend HPA <br/> 1-5 Pods)) -.-> |CPU > 60%| API
+        HPA_F((Frontend HPA <br/> 1-4 Pods)) -.-> |CPU > 60%| WEB
+        
+        %% Secrets / Configs dependencies
+        CM{{ConfigMap <br/> PORT, routing}} -.-> API
+        SEC{{Opaque Secret <br/> Credentials}} -.-> API
+        
+        %% Storage
+        DB_SVC --> PVC[(AWS gp2 <br/> Persistent Volume)]
+    end
+
+    %% CI / CD Pipeline
+    subgraph "CI/CD Infrastructure"
+        GH(GitHub Repo) --> J[Jenkins Pipeline <br/> Jenkinsfile1]
+        J --> |Build, Tag, Push| DHUB[Docker Hub]
+        DHUB -.-> |Image Pull| API
+        DHUB -.-> |Image Pull| WEB
+        J -.-> |kubectl apply & rollout| Nginx
+    end
+```
 <details open>
 <summary><strong>📐 Architecture Highlights</strong></summary>
 
