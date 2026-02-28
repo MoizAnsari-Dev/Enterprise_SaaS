@@ -69,44 +69,44 @@ flowchart TD
     classDef database fill:#eab308,stroke:#854d0e,stroke-width:3px,color:#ffffff
     classDef storage fill:#f59e0b,stroke:#b45309,stroke-width:2px,color:#ffffff
     classDef cicd fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#ffffff
-    classDef config fill:#374151,stroke:#6b7280,stroke-width:2px,stroke-dasharray: 5 5,color:#ffffff
-    classDef hpa fill:#ec4899,stroke:#be185d,stroke-width:2px,stroke-dasharray: 5 5,color:#ffffff
+    classDef config fill:#374151,stroke:#6b7280,stroke-width:2px,stroke-dasharray:5 5,color:#ffffff
+    classDef hpa fill:#ec4899,stroke:#be185d,stroke-width:2px,stroke-dasharray:5 5,color:#ffffff
 
     %% User Interaction
-    User((🧑‍💻 User)):::user ==> |HTTP Port 80| Nginx[🌐 Nginx Ingress LoadBalancer]:::loadbalancer
+    User((🧑‍💻 User)):::user --> |HTTP Port 80| Nginx[🌐 Nginx Ingress LoadBalancer]:::loadbalancer
     
     %% Kubernetes Workloads
     subgraph K8S [☁️ Kubernetes Cluster / Namespace: mean-app]
         direction TB
-        Nginx ==> |/api/| API[⚙️ Node.js Backend ClusterIP]:::backend
-        Nginx ==> |/| WEB[🖥️ Angular Frontend ClusterIP]:::frontend
+        Nginx --> |/api/| API[⚙️ Node.js Backend ClusterIP]:::backend
+        Nginx --> |/| WEB[🖥️ Angular Frontend ClusterIP]:::frontend
         
-        API ==> |Mongoose| DB_SVC[🗄️ MongoDB ClusterIP]:::database
+        API --> |Mongoose| DB_SVC[🗄️ MongoDB ClusterIP]:::database
         
         %% Horizontal Pod Autoscalers (HPA)
-        HPA_B((Backend HPA <br/> 1-5 Pods)):::hpa -.-> |Auto Scale UP| API
-        HPA_F((Frontend HPA <br/> 1-4 Pods)):::hpa -.-> |Auto Scale UP| WEB
+        HPA_B((Backend HPA <br/> 1-5 Pods)):::hpa -.-> |Auto Scale| API
+        HPA_F((Frontend HPA <br/> 1-4 Pods)):::hpa -.-> |Auto Scale| WEB
         
         %% Kubernetes Secrets & ConfigMaps
         CM{{ConfigMap <br/> Constants}}:::config -.-> |Env Variables| API
         SEC{{Opaque Secret <br/> Credentials}}:::config -.-> |Base64 Passwords| API
         
         %% Persistent Volumes
-        DB_SVC === |Stateful Binding| PVC[(💾 AWS gp2 <br/> Persistent Volume Claim)]:::storage
+        DB_SVC --> |Stateful Binding| PVC[(💾 AWS gp2 <br/> Persistent Volume Claim)]:::storage
     end
 
     %% Jenkins CI / CD Automation Pipeline
     subgraph CI [🚀 CI/CD Automation Pipeline]
         GH(🐙 GitHub Repo) --> |Trigger| J[🛠️ Jenkins Pipeline]:::cicd
-        J ==> |Docker Build & Push| DHUB[🐳 Docker Hub]:::cicd
-        DHUB -.-> |Auto Images Pull| API
-        DHUB -.-> |Auto Images Pull| WEB
+        J --> |Docker Build & Push| DHUB[🐳 Docker Hub]:::cicd
+        DHUB -.-> |Image Pull| API
+        DHUB -.-> |Image Pull| WEB
         J -.-> |kubectl declarative rollout| Nginx
     end
 
-    %% Beautiful Subgraph Styling (Dark Glassmorphism aesthetic)
-    style K8S fill:#1f2937,stroke:#3b82f6,stroke-width:2px,color:#e5e7eb,rx:12,ry:12
-    style CI fill:#1e1b4b,stroke:#6366f1,stroke-width:2px,color:#e5e7eb,rx:12,ry:12
+    %% Subgraph Styling
+    style K8S fill:#1f2937,stroke:#3b82f6,stroke-width:2px,color:#e5e7eb
+    style CI fill:#1e1b4b,stroke:#6366f1,stroke-width:2px,color:#e5e7eb
 ```
 <details open>
 <summary><strong>📐 Architecture Highlights</strong></summary>
