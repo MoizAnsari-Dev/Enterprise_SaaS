@@ -45,7 +45,6 @@ metadata:
   name: frontend
   namespace: mean-app
 spec:
-  type: NodePort
   selector:
     app: frontend
   ports:
