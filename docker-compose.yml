@@ -1,6 +1,34 @@
 version: '3.8'
 
 services:
+  postgres-db:
+    image: postgres:15
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydatabase
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - mean-network
+    restart: unless-stopped
+
+  auth-backend:
+    build: ./auth-backend
+    container_name: mean-auth-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - AUTH_DB_URL=postgresql://myuser:mypassword@postgres-db:5432/mydatabase
+    depends_on:
+      - postgres-db
+    networks:
+      - mean-network
+    restart: unless-stopped
+
   mongodb:
     image: mongo:latest
     container_name: mongodb-server
@@ -46,6 +74,7 @@ services:
     depends_on:
       - frontend
       - backend
+      - auth-backend
     networks:
       - mean-network
     restart: unless-stopped
@@ -56,3 +85,4 @@ networks:
 
 volumes:
   mongodb-data:
+  postgres-data:

@@ -2,7 +2,7 @@
   <header class="modern-header">
     <div class="header-container">
       <div class="brand-wrapper">
-        <a routerLink="/tutorials" class="brand" style="display: flex; align-items: center;">
+        <a [routerLink]="isLoggedIn ? '/tutorials' : '/'" class="brand" style="display: flex; align-items: center;">
           <svg style="width: 28px; height: 28px; margin-right: 12px; filter: drop-shadow(0 0 8px rgba(99,102,241,0.5));"
             viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 2L14.8541 9.1459L22 12L14.8541 14.8541L12 22L9.1459 14.8541L2 12L9.1459 9.1459L12 2Z"
@@ -20,8 +20,11 @@
             style="font-weight: 800; letter-spacing: -0.04em; background: linear-gradient(135deg, var(--foreground) 30%, var(--muted-foreground) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Luminary</span>
         </a>
         <nav class="nav-links">
-          <a routerLink="tutorials" class="nav-link" routerLinkActive="active">My Journal</a>
-          <a routerLink="add" class="nav-link" routerLinkActive="active">New Entry</a>
+          <a routerLink="tutorials" class="nav-link" routerLinkActive="active" *ngIf="isLoggedIn">My Journal</a>
+          <a routerLink="add" class="nav-link" routerLinkActive="active" *ngIf="isLoggedIn">New Entry</a>
+          <a routerLink="login" class="nav-link" routerLinkActive="active" *ngIf="!isLoggedIn">Login</a>
+          <a routerLink="register" class="nav-link" routerLinkActive="active" *ngIf="!isLoggedIn">Register</a>
+          <a *ngIf="isLoggedIn" href (click)="logout()" class="nav-link">Logout</a>
         </nav>
       </div>
 

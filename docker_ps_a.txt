@@ -1,0 +1,5 @@
+CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS                      PORTS                                             NAMES
+cdd99f9ce89a   mongo:latest   "docker-entrypoint.s…"   18 minutes ago   Created                                                                       mongodb-server
+e6573226e767   postgres       "docker-entrypoint.s…"   46 minutes ago   Up 46 minutes               0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp       postgres-db
+cafe8a99022b   testfront      "/docker-entrypoint.…"   12 hours ago     Exited (0) 12 hours ago                                                       testfront
+a81d2f5afd64   mongo:latest   "docker-entrypoint.s…"   4 days ago       Exited (255) 36 hours ago   0.0.0.0:27017->27017/tcp, [::]:27017->27017/tcp   mongodb

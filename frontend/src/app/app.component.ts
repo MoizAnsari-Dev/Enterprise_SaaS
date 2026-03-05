@@ -1,16 +1,35 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
-  title = 'Angular 15 CRUD example';
+export class AppComponent implements OnInit {
   isDarkMode = false;
+  isLoggedIn = false;
+  username?: string;
 
-  constructor() {
+  constructor(private authService: AuthService) {
     this.initializeTheme();
+  }
+
+  ngOnInit(): void {
+    this.authService.user$.subscribe(user => {
+      this.isLoggedIn = !!user;
+      if (user) {
+        this.username = user.username;
+      }
+    });
+
+    if (this.authService.getToken()) {
+      this.isLoggedIn = true;
+      const user = this.authService.getUserFromStorage();
+      if (user) {
+        this.username = user.username;
+      }
+    }
   }
 
   initializeTheme() {
@@ -30,5 +49,10 @@ export class AppComponent {
       document.documentElement.removeAttribute('data-theme');
       localStorage.setItem('theme', 'light');
     }
+  }
+
+  logout(): void {
+    this.authService.logout();
+    window.location.reload();
   }
 }

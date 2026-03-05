@@ -63,59 +63,61 @@
 </div>
 
 <ng-template #editable>
-  <div *ngIf="currentTutorial.id" class="modern-card max-auto" style="max-width: 600px; margin: 0 auto;">
-    <h4 class="mb-4 font-weight-600" style="color: var(--foreground); letter-spacing: -0.025em;">Edit Entry</h4>
+  <div class="page-container">
+    <div *ngIf="currentTutorial.id" class="modern-card mx-auto" style="max-width: 600px; margin: 0 auto;">
+      <h4 class="mb-4 font-weight-600" style="color: var(--foreground); letter-spacing: -0.025em;">Edit Entry</h4>
 
-    <form class="mb-4">
-      <div class="form-group mb-4">
-        <label for="title" class="text-muted font-weight-500 mb-2">Title</label>
-        <input type="text" class="form-control modern-input" id="title" [(ngModel)]="currentTutorial.title"
-          name="title" />
+      <form class="mb-4">
+        <div class="form-group mb-4">
+          <label for="title" class="text-muted font-weight-500 mb-2">Title</label>
+          <input type="text" class="form-control modern-input" id="title" [(ngModel)]="currentTutorial.title"
+            name="title" />
+        </div>
+
+        <div class="form-group mb-4">
+          <label for="description" class="text-muted font-weight-500 mb-2 d-flex justify-content-between w-100">
+            <span>Journal Content</span>
+            <span style="font-size: 0.8rem; font-weight: 400;">{{ getWordCount(currentTutorial.description) }}
+              words</span>
+          </label>
+          <textarea class="form-control modern-input" id="description" rows="10"
+            [(ngModel)]="currentTutorial.description" name="description"></textarea>
+        </div>
+
+        <div class="form-group mb-4">
+          <label class="text-muted font-weight-500 mr-3">Current Status</label>
+          <span class="badge" [ngClass]="currentTutorial.published ? 'badge-success' : 'badge-warning'"
+            style="font-size: 0.85rem;">
+            {{ currentTutorial.published ? "Locked" : "Draft" }}
+          </span>
+        </div>
+      </form>
+
+      <div class="action-buttons d-flex flex-wrap gap-2 mt-4 pt-4 border-top">
+        <button class="btn-modern-secondary" *ngIf="currentTutorial.published" (click)="updatePublished(false)">
+          Unlock Entry
+        </button>
+        <button class="btn-modern-secondary" style="color: #10b981; border-color: #10b981;"
+          *ngIf="!currentTutorial.published" (click)="updatePublished(true)">
+          Lock Entry
+        </button>
+
+        <button class="btn-modern-danger" (click)="deleteTutorial()">
+          Delete
+        </button>
+
+        <button type="submit" class="btn-modern ml-auto" (click)="updateTutorial()">
+          Save Changes
+        </button>
       </div>
 
-      <div class="form-group mb-4">
-        <label for="description" class="text-muted font-weight-500 mb-2 d-flex justify-content-between w-100">
-          <span>Journal Content</span>
-          <span style="font-size: 0.8rem; font-weight: 400;">{{ getWordCount(currentTutorial.description) }}
-            words</span>
-        </label>
-        <textarea class="form-control modern-input" id="description" rows="10" [(ngModel)]="currentTutorial.description"
-          name="description"></textarea>
+      <div class="text-center mt-3" *ngIf="message">
+        <p class="text-success font-weight-500 m-0">{{ message }}</p>
       </div>
-
-      <div class="form-group mb-4">
-        <label class="text-muted font-weight-500 mr-3">Current Status</label>
-        <span class="badge" [ngClass]="currentTutorial.published ? 'badge-success' : 'badge-warning'"
-          style="font-size: 0.85rem;">
-          {{ currentTutorial.published ? "Locked" : "Draft" }}
-        </span>
-      </div>
-    </form>
-
-    <div class="action-buttons d-flex flex-wrap gap-2 mt-4 pt-4 border-top">
-      <button class="btn-modern-secondary" *ngIf="currentTutorial.published" (click)="updatePublished(false)">
-        Unlock Entry
-      </button>
-      <button class="btn-modern-secondary" style="color: #10b981; border-color: #10b981;"
-        *ngIf="!currentTutorial.published" (click)="updatePublished(true)">
-        Lock Entry
-      </button>
-
-      <button class="btn-modern-danger" (click)="deleteTutorial()">
-        Delete
-      </button>
-
-      <button type="submit" class="btn-modern ml-auto" (click)="updateTutorial()">
-        Save Changes
-      </button>
     </div>
 
-    <div class="text-center mt-3" *ngIf="message">
-      <p class="text-success font-weight-500 m-0">{{ message }}</p>
+    <div *ngIf="!currentTutorial.id" class="modern-card empty-state max-auto" style="max-width: 600px; margin: 0 auto;">
+      <p class="m-0 text-muted">Cannot access this entry...</p>
     </div>
-  </div>
-
-  <div *ngIf="!currentTutorial.id" class="modern-card empty-state max-auto" style="max-width: 600px; margin: 0 auto;">
-    <p class="m-0 text-muted">Cannot access this entry...</p>
   </div>
 </ng-template>

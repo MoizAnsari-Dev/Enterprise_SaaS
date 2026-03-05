@@ -4,17 +4,17 @@
     z-index: 50;
     width: 100%;
     border-bottom: 1px solid var(--border);
-    background-color: rgba(var(--background-rgb), 0.8);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background-color: var(--background);
+    /* Fixed rgba fallback issue */
+    /* Add subtle shadow instead of pure border if preferred, but border is fine */
 }
 
 .header-container {
     display: flex;
-    height: 4rem;
+    height: 4.5rem;
     align-items: center;
     justify-content: space-between;
-    padding: 0 1.5rem;
+    padding: 0 2rem;
     max-width: 1400px;
     margin: 0 auto;
 }
@@ -22,7 +22,7 @@
 .brand-wrapper {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    gap: 2.5rem;
 }
 
 .brand {
@@ -36,15 +36,15 @@
 .nav-links {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 1rem;
 }
 
 .nav-link {
     color: var(--muted-foreground);
-    font-size: 0.875rem;
+    font-size: 0.9rem;
     font-weight: 500;
     text-decoration: none;
-    padding: 0.5rem 0.75rem;
+    padding: 0.5rem 1rem;
     border-radius: calc(var(--radius) - 2px);
     transition: color 0.2s, background-color 0.2s;
 }
@@ -63,8 +63,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 2.25rem;
-    height: 2.25rem;
+    width: 2.5rem;
+    height: 2.5rem;
     border-radius: calc(var(--radius) - 2px);
     border: 1px solid var(--border);
     background-color: transparent;
@@ -78,7 +78,7 @@
 }
 
 .main-content {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 2.5rem 1.5rem;
+    width: 100%;
+    margin: 0;
+    padding: 0;
 }

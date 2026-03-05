@@ -1,0 +1,71 @@
+<div class="landing-container">
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="hero-content">
+            <h1 class="title">
+                Capture Your <span class="highlight">Thoughts</span><br />
+                Elevate Your <span class="highlight">Journey</span>
+            </h1>
+            <p class="subtitle">
+                Your personal, secure, and beautiful space for keeping tracks, journals, and everything that matters.
+                Experience a clutter-free design focused on you.
+            </p>
+
+            <div class="cta-group">
+                <a *ngIf="!isLoggedIn" routerLink="/register" class="btn btn-primary btn-lg">Get Started Free</a>
+                <a *ngIf="isLoggedIn" routerLink="/tutorials" class="btn btn-primary btn-lg">Go to My Journal</a>
+                <a *ngIf="!isLoggedIn" routerLink="/login" class="btn btn-outline btn-lg">Login</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="features-header">
+            <h2>Why Choose Luminary?</h2>
+            <p>Powerful features packed into a beautifully simple interface.</p>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="icon-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="feather feather-book">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                </div>
+                <h3>Seamless Journaling</h3>
+                <p>Write, edit, and organize your entries effortlessly. The distraction-free environment helps you focus
+                    on your thoughts.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="feather feather-shield">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                </div>
+                <h3>Private & Secure</h3>
+                <p>Your data stays yours. Advanced encryption and secure backend ensure that your personal journals
+                    remain strictly confidential.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="feather feather-zap">
+                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                    </svg>
+                </div>
+                <h3>Lightning Fast</h3>
+                <p>Optimized with the modern MEAN stack, offering a snappy and fluid experience whether you're adding a
+                    quick note or reading past entries.</p>
+            </div>
+        </div>
+    </section>
+</div>

@@ -1,0 +1,163 @@
+# ============================================================
+# PostgreSQL: PersistentVolumeClaim if you are using a cloud provider or local storage
+# ============================================================
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: postgres-pvc
+#   namespace: mean-app
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   resources:
+#     requests:
+#       storage: 1Gi
+---
+# ============================================================
+# PostgreSQL: Deployment
+# ============================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-db
+  namespace: mean-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-db
+  template:
+    metadata:
+      labels:
+        app: postgres-db
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: mean-app-secret
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mean-app-secret
+              key: POSTGRES_PASSWORD
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: mean-app-secret
+              key: POSTGRES_DB
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+        readinessProbe:
+          exec:
+            command: ["pg_isready", "-U", "myuser", "-d", "mydatabase"]
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          failureThreshold: 5
+        livenessProbe:
+          exec:
+            command: ["pg_isready", "-U", "myuser", "-d", "mydatabase"]
+          initialDelaySeconds: 30
+          periodSeconds: 15
+      volumes:
+      - name: postgres-storage
+        emptyDir: {}
+        # persistentVolumeClaim:
+        #   claimName: postgres-pvc
+---
+# ============================================================
+# PostgreSQL: Service (ClusterIP - internal only)
+# ============================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-db
+  namespace: mean-app
+spec:
+  selector:
+    app: postgres-db
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+---
+# ============================================================
+# Auth Backend: Deployment
+# ============================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-backend
+  namespace: mean-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-backend
+  template:
+    metadata:
+      labels:
+        app: auth-backend
+    spec:
+      containers:
+      - name: auth-backend
+        image: moizaman/mean-task-auth-backend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "256Mi"
+        env:
+        - name: AUTH_DB_URL
+          valueFrom:
+            secretKeyRef:
+              name: mean-app-secret
+              key: AUTH_DB_URL
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          failureThreshold: 5
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 15
+---
+# ============================================================
+# Auth Backend: Service (ClusterIP - accessed via Nginx)
+# ============================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-backend
+  namespace: mean-app
+spec:
+  selector:
+    app: auth-backend
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
