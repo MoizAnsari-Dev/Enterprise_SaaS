@@ -1,9 +1,11 @@
 <div align="center">
 
-<img src="https://github.com/user-attachments/assets/eb6176b1-3516-4e11-a313-49de53f809dc" alt="Luminary Journal Banner" width="100%" style="border-radius: 15px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+<img src="https://github.com/user-attachments/assets/eb6176b1-3516-4e11-a313-49de53f809dc" alt="Enterprise SaaS Platform Banner" width="100%" style="border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
 
-# Enterprise SaaS Microservices Architecture with GitOps  
-**Enterprise-Grade Kubernetes Infrastructure on AWS EKS using Jenkins, ArgoCD, and Nginx Ingress.**
+# Enterprise SaaS Microservices Architecture with GitOps
+**Production-Grade Kubernetes Infrastructure on AWS EKS**
+
+<br />
 
 <p align="center">
   <img src="https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white" alt="Kubernetes" />
@@ -14,36 +16,31 @@
   <img src="https://img.shields.io/badge/Nginx_Ingress-009639?style=for-the-badge&logo=nginx&logoColor=white" alt="Nginx" />
 </p>
 
-[Architecture & Design](#-enterprise-devops--kubernetes) • [GitOps CI/CD](#-automated-gitops-pipeline-jenkins--argocd) • [Security & Autoscaling](#-security--autoscaling) • [Installation](#-getting-started)
+[Architecture & Design](#architecture--infrastructure) | [GitOps Pipeline](#continuous-delivery--gitops) | [Scalability & Security](#security--scalability) | [Deployment Guide](#deployment--installation)
 
 </div>
 
----
+<br />
 
-## About The Project
-
-This repository serves as a showcase of modern **DevOps, Cloud-Native architecture, and GitOps practices**. While the core application is a polished, Notion-inspired MEAN stack journaling platform, the true focus of this project is the robust, highly scalable infrastructure orchestrating it.
-
-Built on **Amazon Elastic Kubernetes Service (EKS)**, the platform implements a zero-trust microservice architecture, true GitOps continuous delivery via **ArgoCD**, dynamic CI pipelines via **Jenkins**, and traffic routing via an **AWS Network Load Balancer (NLB)** managed by Nginx Ingress.
+> **Overview:** This repository demonstrates a highly scalable, cloud-native DevOps infrastructure. The underlying application is a decoupled Enterprise SaaS platform, but the core focus of this project is the zero-trust microservice architecture, Jenkins CI/CD automation, and pull-based GitOps deployment strategy running on Amazon EKS.
 
 ---
 
-## Enterprise DevOps & Kubernetes Architecture
+## ARCHITECTURE & INFRASTRUCTURE
 
-The environment is entirely declaratively defined in the `/k8s` directory and architected for high availability, self-healing, and zero-downtime rolling updates.
+The environment is robustly defined using declarative Kubernetes manifests and designed for high availability, self-healing workloads, and zero-downtime rolling updates.
 
 ```mermaid
 flowchart TD
-    %% Custom Styling
-    classDef user fill:#6366f1,stroke:#4338ca,stroke-width:3px,color:#ffffff
-    classDef aws fill:#ff9900,stroke:#e68a00,stroke-width:3px,color:#ffffff
-    classDef backend fill:#22c55e,stroke:#166534,stroke-width:3px,color:#ffffff
-    classDef frontend fill:#ef4444,stroke:#991b1b,stroke-width:3px,color:#ffffff
-    classDef auth fill:#0ea5e9,stroke:#0369a1,stroke-width:3px,color:#ffffff
-    classDef database fill:#eab308,stroke:#854d0e,stroke-width:3px,color:#ffffff
-    classDef storage fill:#f59e0b,stroke:#b45309,stroke-width:2px,color:#ffffff
-    classDef cicd fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#ffffff
-    classDef argocd fill:#f97316,stroke:#c2410c,stroke-width:3px,color:#ffffff
+    classDef user fill:#2d3748,stroke:#1a202c,stroke-width:2px,color:#ffffff
+    classDef aws fill:#dd6b20,stroke:#c05621,stroke-width:2px,color:#ffffff
+    classDef backend fill:#2f855a,stroke:#22543d,stroke-width:2px,color:#ffffff
+    classDef frontend fill:#c53030,stroke:#822727,stroke-width:2px,color:#ffffff
+    classDef auth fill:#2b6cb0,stroke:#1e4e8c,stroke-width:2px,color:#ffffff
+    classDef database fill:#b7791f,stroke:#744210,stroke-width:2px,color:#ffffff
+    classDef storage fill:#718096,stroke:#4a5568,stroke-width:2px,color:#ffffff
+    classDef cicd fill:#553c9a,stroke:#44337a,stroke-width:2px,color:#ffffff
+    classDef argocd fill:#dd6b20,stroke:#c05621,stroke-width:2px,color:#ffffff
 
     User((User Traffic)):::user --> |HTTP/HTTPS| NLB[AWS Network Load Balancer]:::aws
     NLB --> Ingress[Nginx Ingress Controller]:::aws
@@ -76,62 +73,72 @@ flowchart TD
     end
 ```
 
-### Infrastructure Highlights
-* **Nginx Ingress on AWS EKS:** An AWS Network Load Balancer (NLB) provisions external IPs automatically. Advanced Regex rewriting at the ingress level (`nginx.ingress.kubernetes.io/rewrite-target`) seamlessly routes traffic to independent microservices (`/api` vs `/auth`).
-* **Microservices Segmentation:** Monoliths are broken down. The core backend and authentication backend are decoupled, utilizing MongoDB and PostgreSQL respectively to demonstrate multi-database stateful deployments.
-* **Declarative Config & Secrets:** Environment variables are strictly maintained through K8s `ConfigMap` resources, avoiding hard-coded variables inside Docker images. Sensitive credentials are Base64 encoded into `Secret` resources.
+### Key Technical Implementations
+
+**AWS Ingress & Load Balancing**  
+Traffic is marshaled into the cluster using an **AWS Network Load Balancer (NLB)**. At the ingress level, advanced regex rewriting (`nginx.ingress.kubernetes.io/rewrite-target`) actively segments traffic across independent monolithic boundaries (/api vs /auth).
+
+**Microservice Segmentation**  
+The backend is aggressively decoupled. Authentication and core business logic run as entirely separate pods, connecting to independent persistent databases (PostgreSQL and MongoDB) to simulate enterprise multi-database stateful deployments.
+
+**Declarative Configuration Management**  
+Hardcoded tokens are eliminated. Infrastructure relies on Kubernetes `ConfigMap` resources for dynamic variable injection at runtime, while sensitive data is Base64 encoded and managed via isolated `Secret` resources.
 
 ---
 
-## Automated GitOps Pipeline (Jenkins + ArgoCD)
+## CONTINUOUS DELIVERY & GITOPS
 
-This infrastructure aggressively abandons imperative `kubectl apply` commands in favor of a true **Pull-based GitOps approach**. 
+This infrastructure abandons imperative provisioning commands (`kubectl apply`) in favor of a strictly pull-based GitOps paradigm to ensure the active cluster state perfectly mirrors the repository.
 
-1. **Continuous Integration (Jenkins):** Upon a code merge, Jenkins executes a declarative pipeline (`Jenkinsfile1`). It builds Docker images dynamically tagged with the `$BUILD_NUMBER` and pushes them to Docker Hub.
-2. **Manifest Updation:** Jenkins securely authenticates back into the GitHub repository, sed-replaces the old image tags in the specific Kubernetes deployment YAMLs (`k8s/`), and commits the new tags bypassing the CI trigger.
-3. **Continuous Deployment (ArgoCD):** Deployed inside the EKS cluster, ArgoCD continuously monitors the `main` branch. The moment Jenkins pushes the manifest update, ArgoCD catches the drift and automatically initiates a zero-downtime rolling update to synchronize the live cluster state with the Git repository.
-
----
-
-## Security & Autoscaling
-
-- **Horizontal Pod Autoscaling (HPA):** Powered by the Kubernetes Metrics Server. If CPU spikes over 60% or Memory over 70%, the HPA automatically provisions new replicas (scaling from 1 to 5 pods) to absorb traffic spikes, scaling back down when load subsides.
-- **Self-Healing Infrastructure:** Rigorous HTTP `livenessProbe` and `readinessProbe` blocks ensure traffic isn't routed to malfunctioning or starting containers.
-- **Zero-Trust Network Limits:** Pods utilize precise Resource Requests and Limits (e.g. CPU `100m` request, `500m` limit) to prevent rogue memory leaks from crashing the host EKS nodes.
+1. **Continuous Integration (Jenkins)**  
+   Upon code merge, Jenkins triggers a declarative pipeline (`Jenkinsfile1`). It builds Docker images tagged dynamically via `$BUILD_NUMBER` and pushes the updated artifacts to the registry.
+2. **Automated Manifest Updates**  
+   Jenkins securely authenticates against GitHub, identifies the target deployment files (`k8s/`), parses and modifies the image tags, and pushes a commit back to the `main` branch, intentionally bypassing further CI loops.
+3. **Continuous Deployment (ArgoCD)**  
+   ArgoCD, living inside the EKS cluster, acts as the synchronization controller. Detecting the drift caused by Jenkins, it automatically provisions a rolling update—ensuring zero downtime while pulling the newly tagged images from Docker Hub.
 
 ---
 
-## Getting Started
+## SECURITY & SCALABILITY
 
-Deploying the entire infrastructure can be done via ArgoCD.
+A production environment must anticipate failure. This cluster relies heavily on dynamic scaling and self-healing configurations.
 
-### 1. Provision the Cluster & Ingress
-Ensure your Kubernetes core components (like the AWS Nginx Ingress Controller) are installed:
+* **Horizontal Pod Autoscaling (HPA)**  
+  Tethered to the Kubernetes Metrics Server, pods are strictly monitored. If CPU utilization exceeds 60% or Memory breaches 70%, the HPA dynamically provisions new replicas to absorb load spikes, gracefully scaling down when traffic subsides.
+* **Self-Healing Infrastructure**  
+  Every container utilizes aggressive `livenessProbe` and `readinessProbe` definitions. Traffic is halted globally at the ingress controller until a pod successfully returns an HTTP 200 health check, preventing cascading failures.
+* **Resource Quotas & Limits**  
+  To prevent rogue memory leaks from crashing underlying AWS EC2 nodes, strict CPU and Memory requests and limits are enforced globally across the `prod` namespace.
+
+---
+
+## DEPLOYMENT & INSTALLATION
+
+To recreate this environment, standard deployment relies entirely on ArgoCD mapping the `/k8s` directory into your cluster.
+
+### 1. Provision the Initial Ingress
+Apply the AWS Nginx Ingress Controller to generate the Network Load Balancer:
 ```bash
-# Install Ingress for AWS EKS
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.4/deploy/static/provider/aws/deploy.yaml
 ```
 
-### 2. Install ArgoCD
+### 2. Configure ArgoCD
+Install the core ArgoCD control plane within the cluster:
 ```bash
 kubectl create namespace argocd
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml --server-side --force-conflicts
 ```
 
-### 3. Deploy the Application
-Apply the overarching ArgoCD Application manifest. ArgoCD will instantly construct the cluster matching the GitHub `k8s/` directory.
+### 3. Deploy the Platform
+Apply the base ArgoCD tracking manifest. ArgoCD will instantly detect the repository and construct the required `prod` namespace, databases, deployments, and services.
 ```bash
 kubectl apply -f k8s/argocd-app.yaml
 ```
 
-### Option 2: Docker Compose (Local Testing)
-For rapid local validation without Kubernetes overhead:
-```bash
-docker-compose up -d --build
-```
+*Note for local validation:* If deploying without a Kubernetes cluster, a raw `docker-compose.yml` file is provided for isolated rapid testing: `docker-compose up -d --build`.
 
----
+<br />
 
 <div align="center">
-  <b>Architected for the Cloud, Built for Scale.</b><br><br>
+  <b>Designed for the Cloud. Built for Scale.</b>
 </div>
