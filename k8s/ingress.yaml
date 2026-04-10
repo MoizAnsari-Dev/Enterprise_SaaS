@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: mean-app-ingress-rewrite
-  namespace: mean-app
+  namespace: prod
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
@@ -23,7 +23,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: mean-app-ingress
-  namespace: mean-app
+  namespace: prod
 spec:
   ingressClassName: nginx
   rules:

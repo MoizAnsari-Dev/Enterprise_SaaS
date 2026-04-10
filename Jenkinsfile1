@@ -5,7 +5,7 @@ pipeline {
         DOCKERHUB_USERNAME = 'moizaman'
         DOCKERHUB_CREDENTIALS_ID = 'dockerhub-credentials'
         GITHUB_CREDENTIALS_ID = 'github-credentials' // You will need to add this to Jenkins credentials
-        NAMESPACE = 'mean-app'
+        NAMESPACE = 'prod'
         IMAGE_TAG = "build-${BUILD_NUMBER}" // Use dynamic build tags for GitOps
     }
 

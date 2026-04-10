@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: mean-app-config
-  namespace: mean-app
+  namespace: prod
 data:
   PORT: "8080"
   DB_HOST: "mongodb"

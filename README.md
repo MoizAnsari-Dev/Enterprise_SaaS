@@ -2,7 +2,7 @@
 
 <img src="https://github.com/user-attachments/assets/eb6176b1-3516-4e11-a313-49de53f809dc" alt="Luminary Journal Banner" width="100%" style="border-radius: 15px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
 
-# MEAN Microservices Architecture with GitOps  
+# Enterprise SaaS Microservices Architecture with GitOps  
 **Enterprise-Grade Kubernetes Infrastructure on AWS EKS using Jenkins, ArgoCD, and Nginx Ingress.**
 
 <p align="center">
@@ -48,7 +48,7 @@ flowchart TD
     User((User Traffic)):::user --> |HTTP/HTTPS| NLB[AWS Network Load Balancer]:::aws
     NLB --> Ingress[Nginx Ingress Controller]:::aws
     
-    subgraph EKS [Amazon EKS Cluster / Namespace: mean-app]
+    subgraph EKS [Amazon EKS Cluster / Namespace: prod]
         direction TB
         Ingress --> |"/"| FE[Angular Frontend]:::frontend
         Ingress --> |"/api"| BE[Node.js Core Backend]:::backend
