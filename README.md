@@ -129,7 +129,19 @@ kubectl create namespace argocd
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml --server-side --force-conflicts
 ```
 
-### 3. Deploy the Platform
+### 3. Access the ArgoCD Dashboard
+To securely access the ArgoCD Web UI without exposing it to the public internet, use Kubernetes port-forwarding:
+```bash
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+```
+* **URL:** `https://localhost:8080`
+* **Username:** `admin`
+* **Password:** Retrieve the automatically generated password using:
+```bash
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+```
+
+### 4. Deploy the Platform
 Apply the base ArgoCD tracking manifest. ArgoCD will instantly detect the repository and construct the required `prod` namespace, databases, deployments, and services.
 ```bash
 kubectl apply -f k8s/argocd-app.yaml
